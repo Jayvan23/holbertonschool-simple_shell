@@ -17,4 +17,4 @@ environment and handle any arguments or special syntax.
 
 # Authors
 - [Jayvan Ramos](https://github.com/Jayvan23)
-- [Aurelio Pagan] (
+- [Aurelio Pagan](https://github.com/aureliopagan)
