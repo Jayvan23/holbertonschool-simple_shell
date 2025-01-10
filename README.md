@@ -16,6 +16,7 @@ environment and handle any arguments or special syntax.
 \_shell supports the following features:
 
 simple_shell
+
 The shell starts and displays the prompt
 hsh
 Start the simple shell by invoking 'hsh'
