@@ -18,14 +18,23 @@ environment and handle any arguments or special syntax.
 simple_shell
 
 The shell starts and displays the prompt
+
 hsh
+
 Start the simple shell by invoking 'hsh'
+
 ls
+
 Output the list of files in the current directory:
+
 AUTHORS          README.md        hsh
+
 main.c           man_1_simple_shell shell.c
+
 shell.h          shellbuiltsin.c  shellhelpers.c
+
 exit
+
 Exits the shell
 
 # Authors
