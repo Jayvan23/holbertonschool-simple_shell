@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-extern char *environ;  /* To access environment variables */
+extern char **environ;  /* To access environment variables */
 
 int main(void) {
     char *line = NULL;
@@ -16,6 +16,13 @@ int main(void) {
     int i, j;
     char cwd[1024];
     int status = 0;  /* Track the exit status of the last command */
+    char **env;
+    char *var;
+    char *value;
+    char *path;
+    char *cmd_path;
+    char *tok;
+
 
     while (1) {
         i = 0;  /* Declare variables at the top */
@@ -80,7 +87,7 @@ int main(void) {
         /* Built-in: env */
         if (strcmp(args[0], "env") == 0) {
             /* Directly use environ to access the environment variables */
-            for (char **env = environ; *env != NULL; env++) {
+            for (env = environ; *env != NULL; env++) {
                 printf("%s\n", *env);
             }
             continue; /* Avoid further processing */
@@ -91,8 +98,8 @@ int main(void) {
             if (args[1] == NULL || strchr(args[1], '=') == NULL) {
                 fprintf(stderr, "export: usage: export VAR=value\n");
             } else {
-                char *var = strtok(args[1], "=");
-                char *value = strtok(NULL, "=");
+                var = strtok(args[1], "=");
+                value = strtok(NULL, "=");
                 if (setenv(var, value, 1) != 0) {
                     perror("export");
                 }
@@ -103,25 +110,31 @@ int main(void) {
         /* Execute external commands */
         pid = fork();
         if (pid == 0) { /* Child process */
-            /* Handle commands by checking if the path is absolute */
             if (args[0][0] != '/') {
-                // Command isn't an absolute path, try to find it in $PATH
-                char *path = getenv("PATH");
-                char *cmd_path = malloc(strlen(path) + strlen(args[0]) + 2);
-                char *tok = strtok(path, ":");
+                path = getenv("PATH");
+                cmd_path = malloc(strlen(path) + strlen(args[0]) + 2);
+                tok = strtok(path, ":");
+
                 while (tok) {
                     sprintf(cmd_path, "%s/%s", tok, args[0]);
+                    
                     if (access(cmd_path, X_OK) == 0) {
-                        execve(cmd_path, args, environ);
+                        if (execve(cmd_path, args, environ) == -1) {
+                            perror("execve");
+                            free(cmd_path);
+                            exit(EXIT_FAILURE);
+                        }
                     }
                     tok = strtok(NULL, ":");
                 }
+                
                 free(cmd_path);
+                fprintf(stderr, "%s: command not found\n", args[0]);
+                exit(EXIT_FAILURE);
             } else {
-                /* Command is an absolute path, just execute */
                 if (execve(args[0], args, environ) == -1) {
-                    perror("./hsh");
-                    exit(EXIT_FAILURE);  /* Exit with failure status if execve fails */
+                    perror("execve");
+                    exit(EXIT_FAILURE);
                 }
             }
         } else if (pid < 0) {
