@@ -116,4 +116,3 @@ int main(void) {
     free(line);  /* Free memory after loop ends */
     return 0;
 }
-

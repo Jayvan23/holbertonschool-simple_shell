@@ -1,0 +1,53 @@
+.simple_shell(1)                      User Commands
+
+NAME
+       simple_shell - a simple UNIX command-line interpreter
+
+SYNOPSIS
+       simple_shell
+
+DESCRIPTION
+       simple_shell is a basic UNIX command-line interpreter that prompts the user to enter
+       a command. It waits for user input, executes the command, and then displays the prompt again.
+       The command line consists of a single word (no arguments), and no advanced features like
+       semicolons, pipes, or redirection are supported. If a command cannot be found, an error message
+       is displayed, and the prompt is shown again.
+
+       The shell handles errors and the "end of file" condition (Ctrl+D) gracefully. If the user presses
+       Ctrl+D, the shell exits.
+
+COMMANDS
+       The shell executes commands entered by the user. Each command must be a single word with no arguments.
+       If an executable is not found, an error message is shown.
+
+EXAMPLES
+       $ simple_shell
+       # The shell starts and displays the prompt
+       $ hsh
+       # Start the simple shell by invoking 'hsh'
+       $ ls
+       # Output the list of files in the current directory:
+       AUTHORS          README.md        hsh
+       main.c           man_1_simple_shell shell.c
+       shell.h          shellbuiltsin.c  shellhelpers.c
+       $ exit
+       # Exits the shell
+
+EXIT STATUS
+       0   Successful execution.
+       1   Command not found or execution failed.
+
+FILES
+       AUTHORS
+       README.md
+       hsh
+       main.c
+       man_1_simple_shell
+       shell.c
+       shell.h
+       shellbuiltsin.c
+       shellhelpers.c
+
+AUTHORS
+       Jayvan, Aurelio - Creators of the simple_shell project.
+       See the AUTHORS file for a full list of contributors.
