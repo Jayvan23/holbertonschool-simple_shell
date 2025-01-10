@@ -18,7 +18,7 @@ int main(void) {
     char **env;
     char *var;
     char *value;
-
+    int status = 0;  // Track the exit status of the last command
 
     while (1) {
         i = 0;  /* Declare variables at the top */
@@ -42,8 +42,12 @@ int main(void) {
 
         /* Built-in: exit */
         if (strcmp(args[0], "exit") == 0) {
+            if (args[1] != NULL) {  // If there are extra arguments after exit
+                fprintf(stderr, "exit: too many arguments\n");
+                continue;  // Print error and continue with the prompt
+            }
             free(line);
-            exit(0);
+            exit(status);  // Exit the shell with the current status
         }
 
         /* Built-in: cd */
@@ -104,15 +108,21 @@ int main(void) {
         if (pid == 0) { /* Child process */
             if (execve(args[0], args, (char * const*)environ) == -1) {  /* Cast environ to correct type */
                 perror("./hsh");
+                exit(EXIT_FAILURE);  // Exit with failure status if execve fails
             }
-            exit(EXIT_FAILURE);
         } else if (pid < 0) {
             perror("fork");
         } else { /* Parent process */
-            wait(NULL);
+            wait(&status);  // Wait for child process to finish
+            if (WIFEXITED(status)) {
+                status = WEXITSTATUS(status);  // Capture exit status of the child process
+            } else if (WIFSIGNALED(status)) {
+                status = 128 + WTERMSIG(status);  // If child process was terminated by a signal
+            }
         }
     }
 
     free(line);  /* Free memory after loop ends */
     return 0;
 }
+
