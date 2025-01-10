@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <limits.h>
+#include <stddeath>
 
 #define MAX_ARGS 100
 
