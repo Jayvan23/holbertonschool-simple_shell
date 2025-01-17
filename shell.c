@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-extern char *environ;  /* To access environment variables */
+extern char **environ;  /* To access environment variables */
 
 int main(void) {
     char *line = NULL;
@@ -15,10 +15,18 @@ int main(void) {
     pid_t pid;
     int i, j;
     char cwd[1024];
+    int status = 0;  /* Track the exit status of the last command */
     char **env;
     char *var;
     char *value;
+<<<<<<< HEAD
+    char *path;
+    char *cmd_path;
+    char *tok;
+
+=======
     int status = 0;  /* Track the exit status of the last command */
+>>>>>>> e113200c5495d6922555da90522d17d7486f1cfb
 
     while (1) {
         i = 0;  /* Declare variables at the top */
@@ -32,7 +40,7 @@ int main(void) {
 
         line[nread - 1] = '\0';  /* Remove newline character */
         args[i] = strtok(line, " ");
-        while (args[i] != NULL) {
+        while (args[i] != NULL && i < 99) {
             i++;
             args[i] = strtok(NULL, " ");
         }
@@ -83,7 +91,7 @@ int main(void) {
         /* Built-in: env */
         if (strcmp(args[0], "env") == 0) {
             /* Directly use environ to access the environment variables */
-            for (*env = environ; *env != NULL; env++) {
+            for (env = environ; *env != NULL; env++) {
                 printf("%s\n", *env);
             }
             continue; /* Avoid further processing */
@@ -106,9 +114,38 @@ int main(void) {
         /* Execute external commands */
         pid = fork();
         if (pid == 0) { /* Child process */
+<<<<<<< HEAD
+            if (args[0][0] != '/') {
+                path = getenv("PATH");
+                cmd_path = malloc(strlen(path) + strlen(args[0]) + 2);
+                tok = strtok(path, ":");
+
+                while (tok) {
+                    sprintf(cmd_path, "%s/%s", tok, args[0]);
+                    
+                    if (access(cmd_path, X_OK) == 0) {
+                        if (execve(cmd_path, args, environ) == -1) {
+                            perror("execve");
+                            free(cmd_path);
+                            exit(EXIT_FAILURE);
+                        }
+                    }
+                    tok = strtok(NULL, ":");
+                }
+                
+                free(cmd_path);
+                fprintf(stderr, "%s: command not found\n", args[0]);
+                exit(EXIT_FAILURE);
+            } else {
+                if (execve(args[0], args, environ) == -1) {
+                    perror("execve");
+                    exit(EXIT_FAILURE);
+                }
+=======
             if (execve(args[0], args, (char * const*)environ) == -1) {  /* Cast environ to correct type */
                 perror("./hsh");
                 exit(EXIT_FAILURE);  /* Exit with failure status if execve fails */
+>>>>>>> e113200c5495d6922555da90522d17d7486f1cfb
             }
         } else if (pid < 0) {
             perror("fork");
