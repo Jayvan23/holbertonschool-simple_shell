@@ -15,18 +15,15 @@ int main(void) {
     pid_t pid;
     int i, j;
     char cwd[1024];
-    int status = 0;  /* Track the exit status of the last command */
+    int status;
     char **env;
     char *var;
     char *value;
-<<<<<<< HEAD
     char *path;
     char *cmd_path;
     char *tok;
 
-=======
-    int status = 0;  /* Track the exit status of the last command */
->>>>>>> e113200c5495d6922555da90522d17d7486f1cfb
+    status = 0;  /* Track the exit status of the last command */
 
     while (1) {
         i = 0;  /* Declare variables at the top */
@@ -114,16 +111,15 @@ int main(void) {
         /* Execute external commands */
         pid = fork();
         if (pid == 0) { /* Child process */
-<<<<<<< HEAD
-            if (args[0][0] != '/') {
+            if (args[0][0] != '/') {  /* If the command is not an absolute path */
                 path = getenv("PATH");
-                cmd_path = malloc(strlen(path) + strlen(args[0]) + 2);
+                cmd_path = malloc(strlen(path) + strlen(args[0]) + 2);  /* Allocate memory for cmd_path */
                 tok = strtok(path, ":");
 
                 while (tok) {
                     sprintf(cmd_path, "%s/%s", tok, args[0]);
                     
-                    if (access(cmd_path, X_OK) == 0) {
+                    if (access(cmd_path, X_OK) == 0) {  /* Check if command exists and is executable */
                         if (execve(cmd_path, args, environ) == -1) {
                             perror("execve");
                             free(cmd_path);
@@ -135,19 +131,14 @@ int main(void) {
                 
                 free(cmd_path);
                 fprintf(stderr, "%s: command not found\n", args[0]);
-                exit(EXIT_FAILURE);
-            } else {
+                exit(EXIT_FAILURE);  /* Exit with failure if command not found */
+            } else {  /* If the command is an absolute path */
                 if (execve(args[0], args, environ) == -1) {
                     perror("execve");
                     exit(EXIT_FAILURE);
                 }
-=======
-            if (execve(args[0], args, (char * const*)environ) == -1) {  /* Cast environ to correct type */
-                perror("./hsh");
-                exit(EXIT_FAILURE);  /* Exit with failure status if execve fails */
->>>>>>> e113200c5495d6922555da90522d17d7486f1cfb
             }
-        } else if (pid < 0) {
+        } else if (pid < 0) {  /* Fork failed */
             perror("fork");
         } else { /* Parent process */
             wait(&status);  /* Wait for child process to finish */
